@@ -1,0 +1,14 @@
+# Data
+Data/
+*.csv
+*.tsv
+*.rds
+
+# Nextflow
+Nextflow/work/
+Nextflow/.nextflow*
+Nextflow/results/*.rds
+.nextflow.log*
+
+# System
+.DS_Store
