@@ -1,4 +1,4 @@
-# Predicting BMI from Human Microbiome (Thesis Project)
+# Microbiome BMI Prediction: A Nextflow & R Pipeline
 
 ## 📌 Overview
 This repository contains a scalable **Nextflow** pipeline to predict Body Mass Index (BMI) from human gut microbiome data (Metagenomics). It utilizes the **Metalog** database (17,903 samples) and benchmarks multiple Machine Learning models:
