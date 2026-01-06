@@ -41,7 +41,7 @@ workflow {
     
     // Define methods to run
     // Define methods to run
-    methods_ch = Channel.from("rf")
+    methods_ch = Channel.from("xgbTree")
     
     // Combine method name with data for parallel execution
     train_input_ch = methods_ch.combine(preproc_ch)
