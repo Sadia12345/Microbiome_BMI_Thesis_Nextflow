@@ -1,0 +1,101 @@
+% ============================================================
+% CHAPTER 2: LITERATURE REVIEW
+% University of Turku, Faculty of Technology
+% MSc Thesis - Microbiome-Based BMI Prediction
+% ============================================================
+
+\chapter{Literature Review}
+\label{ch:literature}
+
+This chapter surveys the scientific foundations of microbiome-based phenotype prediction, organized into three thematic sections: the biological basis of gut-obesity interactions, computational approaches to microbiome analysis, and the current state of machine learning in metagenomics.
+
+\section{The Gut Microbiome and Host Metabolism}
+
+The human gastrointestinal tract harbors approximately $10^{13}$ microbial cells---a population rivaling the count of human somatic cells---encoding a collective genome (the ``microbiome'') orders of magnitude larger than the host genome \cite{sender2016revised}. This microbial consortium performs metabolic functions inaccessible to human enzymes, including the fermentation of dietary fiber into short-chain fatty acids (SCFAs), the synthesis of vitamins B and K, and the biotransformation of bile acids \cite{rowland2018gut}.
+
+\subsection{Early Observations: The Firmicutes/Bacteroidetes Hypothesis}
+
+The seminal work of Turnbaugh et al.\ (2006) demonstrated that germ-free mice colonized with microbiota from obese donors gained significantly more fat mass than those receiving microbiota from lean donors, despite identical caloric intake \cite{turnbaugh2006obesity}. This landmark study proposed the Firmicutes/Bacteroidetes (F/B) ratio as a biomarker for obesity, with obese individuals exhibiting elevated Firmicutes relative to Bacteroidetes.
+
+However, subsequent meta-analyses have challenged the universality of this ratio. A systematic review encompassing 23 independent cohorts found no consistent association between the F/B ratio and BMI after controlling for age, sex, and geographic origin \cite{magne2020firmicutes}. The discrepancy likely reflects methodological heterogeneity---differences in DNA extraction protocols, sequencing platforms, and taxonomic classification pipelines---as well as the profound influence of diet, which can shift gut composition within 24 hours \cite{david2014diet}.
+
+\subsection{Beyond Phylum-Level Markers: Species-Specific Associations}
+
+Contemporary research has moved beyond coarse taxonomic summaries toward species- and strain-level resolution. A 2024 meta-analysis pooling metagenomic data from over 3,300 samples across 17 countries identified 25 bacterial species reproducibly associated with obesity, including:\cite{NIHMBMI2024}
+
+\begin{itemize}
+    \item \textbf{\emph{Akkermansia muciniphila}}: Consistently depleted in obese subjects; implicated in mucin degradation and gut barrier integrity.
+    \item \textbf{\emph{Bifidobacterium longum}}: Negatively correlated with BMI; produces acetate and lactate with anti-inflammatory properties.
+    \item \textbf{\emph{Faecalibacterium prausnitzii}}: A major butyrate producer; reduced abundance linked to metabolic inflammation.
+\end{itemize}
+
+Importantly, these associations persist after adjusting for confounders, suggesting genuine biological relevance rather than spurious correlation with demographic proxies.
+
+\section{Computational Metagenomics}
+
+\subsection{From Reads to Taxa: The Bioinformatics Pipeline}
+
+Modern metagenomic analysis proceeds through a standardized computational workflow:
+
+\begin{enumerate}
+    \item \textbf{Sequencing:} Shotgun metagenomic sequencing generates millions of short DNA reads per sample.
+    \item \textbf{Quality Control:} Reads are trimmed to remove adapters and low-quality bases.
+    \item \textbf{Taxonomic Profiling:} Tools such as MetaPhlAn4 assign reads to reference genomes, producing relative abundance tables at species resolution \cite{blanco2023metaphlan4}.
+    \item \textbf{Downstream Analysis:} Abundance tables serve as input to statistical and machine learning models.
+\end{enumerate}
+
+\subsection{Challenges in Microbiome Data}
+
+Microbiome datasets present unique statistical challenges that distinguish them from conventional tabular data:
+
+\begin{itemize}
+    \item \textbf{Compositionality:} Relative abundances are constrained to sum to unity, inducing spurious negative correlations between taxa.
+    \item \textbf{Sparsity:} The majority of taxa are absent (zero abundance) in the majority of samples, with zero-inflation rates often exceeding 90\%.
+    \item \textbf{High Dimensionality:} A typical dataset may contain thousands of species but only hundreds of samples, creating a $p >> n$ scenario prone to overfitting.
+\end{itemize}
+
+These characteristics motivate specialized preprocessing---variance filtering, normalization, and transformation---prior to model training.
+
+\section{Machine Learning in Microbiome Research}
+
+\subsection{Algorithm Landscape}
+
+Machine learning applications in metagenomics span classification (e.g., disease vs.\ healthy) and regression (e.g., predicting continuous BMI). The most commonly benchmarked algorithms include:
+
+\textbf{Elastic Net (GLMNet):} A regularized linear model combining L1 (Lasso) and L2 (Ridge) penalties. Elastic Net excels at feature selection in high-dimensional settings but assumes additive, linear effects---a potentially restrictive assumption for microbiome interactions \cite{zou2005regularization}.
+
+\textbf{Random Forest:} An ensemble of decision trees trained on bootstrap samples with random feature subsets. Random Forest captures non-linear relationships and interactions without explicit specification, and provides intrinsic feature importance via permutation or Gini impurity \cite{breiman2001random}.
+
+\textbf{XGBoost (Gradient Boosting):} A sequential ensemble method that iteratively corrects errors from previous trees. XGBoost often achieves state-of-the-art performance on tabular data and offers fine-grained hyperparameter control, though at increased computational cost \cite{chen2016xgboost}.
+
+\textbf{Support Vector Machine (SVM):} A kernel-based classifier that finds optimal separating hyperplanes. While powerful for binary classification, SVM scales poorly ($O(n^3)$) with sample size, limiting its applicability to large metagenomic cohorts.
+
+\subsection{Benchmark Studies}
+
+Comparative evaluations of these algorithms on microbiome data have yielded nuanced conclusions. A systematic benchmark across 29 human microbiome datasets found that XGBoost, Random Forest, and Elastic Net exhibited statistically comparable performance for classification tasks, with algorithm choice less impactful than feature engineering and data quality \cite{topccuouglu2020framework}. Similarly, studies on Inflammatory Bowel Disease diagnosis demonstrated that non-linear models (Random Forest, XGBoost) significantly outperformed linear baselines, achieving Matthews Correlation Coefficients exceeding 0.7 \cite{ibdbenchmark2024}.
+
+For regression tasks---such as predicting age or BMI---tree-based ensembles dominate the literature. Random Forest adapts naturally to regression by averaging predictions across trees, while XGBoost minimizes squared-error loss through gradient descent. A comparative analysis under varying noise levels found Random Forest more robust to discontinuous response functions, while XGBoost excelled with smooth, continuous patterns \cite{regressionbenchmark2023}.
+
+\subsection{The mikropml Framework}
+
+This thesis employs the \texttt{mikropml} R package, developed by the Schloss Laboratory, which provides a standardized interface for microbiome machine learning \cite{mikropml2021}. The package implements:
+
+\begin{itemize}
+    \item Automated preprocessing (near-zero variance removal, centering, scaling).
+    \item Hyperparameter tuning via cross-validation.
+    \item Rigorous train/test separation to prevent data leakage.
+\end{itemize}
+
+By abstracting common pitfalls, \texttt{mikropml} enhances reproducibility and comparability across studies.
+
+\section{Summary}
+
+The literature establishes three key premises for this thesis:
+
+\begin{enumerate}
+    \item The gut microbiome contains genuine biological signal predictive of host metabolic phenotypes, including BMI.
+    \item Traditional biomarkers (e.g., F/B ratio) are unreliable; species-level resolution and large sample sizes are required.
+    \item Non-linear ensemble methods (Random Forest, XGBoost) consistently outperform linear baselines on microbiome data, though marginal differences between ensembles diminish with proper tuning.
+\end{enumerate}
+
+These insights inform the methodological choices described in Chapter~\ref{ch:methods}.

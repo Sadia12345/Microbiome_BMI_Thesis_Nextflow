@@ -1,0 +1,42 @@
+% ============================================================
+% CHAPTER 1: INTRODUCTION
+% University of Turku, Faculty of Technology
+% MSc Thesis - Microbiome-Based BMI Prediction
+% Author: Sadia Zaman
+% ============================================================
+
+\chapter{Introduction}
+\label{ch:introduction}
+
+The human gut microbiome---the vast consortium of bacteria, archaea, viruses, and fungi colonizing the gastrointestinal tract---has emerged as a critical determinant of host metabolism and body composition. With the global prevalence of obesity exceeding 650 million adults and its classification as a pandemic by the World Health Organization, the scientific community has turned its attention toward the gut ecosystem as both a diagnostic reservoir and a therapeutic target \cite{who2021obesity}.
+
+\section{Motivation and Problem Statement}
+
+Traditional epidemiological models of obesity rely on demographic and behavioral covariates: age, sex, caloric intake, and physical activity. While these factors explain a substantial portion of variance in Body Mass Index (BMI), they fail to account for the striking inter-individual variability observed even among subjects with identical lifestyles. This ``metabolic individuality'' has catalyzed interest in the microbiome as a missing explanatory layer.
+
+Recent large-scale metagenomic studies have demonstrated that gut microbial composition correlates with host phenotypes including insulin resistance, inflammation, and adiposity \cite{turnbaugh2006obesity}. However, most published work remains correlative, and the transition from association to prediction---from understanding \emph{which} bacteria correlate with BMI to building models that \emph{forecast} BMI from taxonomic profiles---remains an active frontier.
+
+\section{Research Questions}
+
+This thesis addresses three interconnected research questions:
+
+\begin{enumerate}
+    \item \textbf{Predictive Capacity:} Can machine learning models trained exclusively on gut microbiome composition predict host BMI with clinically meaningful accuracy?
+    \item \textbf{Algorithm Selection:} How do linear models (Elastic Net) compare to non-linear ensemble methods (Random Forest, XGBoost, SVM) in capturing the complex, high-dimensional structure of microbiome data?
+    \item \textbf{Scalability and Efficiency:} What preprocessing strategies (e.g., prevalence filtering) and sample sizes are sufficient to achieve robust performance on consumer-grade hardware?
+\end{enumerate}
+
+\section{Contributions}
+
+This work makes the following contributions:
+
+\begin{itemize}
+    \item A reproducible, end-to-end Nextflow pipeline for microbiome-based phenotype prediction, designed for portability between local workstations and high-performance computing clusters.
+    \item A rigorous benchmark of four machine learning algorithms on 17,903 human gut metagenomes from the Metalog consortium, representing one of the largest such analyses to date.
+    \item A saturation analysis quantifying the relationship between sample size and predictive performance, providing practical guidance for future studies with resource constraints.
+    \item Identification of specific bacterial taxa (e.g., \emph{Adlercreutzia equolifaciens}, \emph{Roseburia lenta}) as top predictors of BMI, offering candidates for downstream mechanistic investigation.
+\end{itemize}
+
+\section{Thesis Structure}
+
+The remainder of this thesis is organized as follows. Chapter~\ref{ch:literature} surveys the scientific literature on microbiome-obesity associations and machine learning applications in metagenomics. Chapter~\ref{ch:methods} details the dataset, preprocessing pipeline, and modeling framework. Chapter~\ref{ch:results} presents the experimental results, including model comparisons and feature importance analysis. Chapter~\ref{ch:discussion} interprets the findings in the context of prior work and discusses limitations. Finally, Chapter~\ref{ch:conclusion} summarizes the contributions and outlines directions for future research.

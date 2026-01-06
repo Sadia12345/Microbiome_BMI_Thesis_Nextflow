@@ -1,0 +1,71 @@
+# This CI builder performs various tests to ensure the template works
+# using different configurations.
+#
+# To compile your own thesis, take a look at the
+# .gitlab-ci-simple.yml included in this repository.
+#
+# Unfortunately the project folder will accumulate lots of temporary
+# files. In addition, minted requires some tuning to support different
+# output directories.
+
+# due to https://docs.docker.com/docker-hub/download-rate-limit/
+# the texlive image is hosted @ https://gitlab.utu.fi/tech/soft/thesis/builder
+
+image: registry.gitlab.utu.fi/tech/soft/thesis/builder:latest
+
+draft_version:
+  stage: build
+  script:
+    - cp -r latex draft
+    - cd draft
+    - cp thesis.tex thesis2.tex
+    - "sed -i 's/version=final/version=draft/g' *.tex"
+    - "latexmk -pdf --shell-escape thesis.tex"
+    - "latexmk -xelatex --shell-escape thesis2.tex"
+    - "pdfinfo thesis.pdf |grep '^Pages: *16$'"
+    - "pdfinfo thesis2.pdf |grep '^Pages: *16$'"
+
+final_version:
+  stage: build
+  script:
+    - cd latex
+    - cp thesis.tex thesis2.tex
+    - "latexmk -pdf --shell-escape thesis.tex"
+    - "latexmk -xelatex --shell-escape thesis2.tex"
+    - "pdfinfo thesis.pdf |grep '^Pages: *16$'"
+    - "pdfinfo thesis2.pdf |grep '^Pages: *16$'"
+    - "pdfa-validate thesis.pdf|grep '^PASS'"
+    - "pdfa-validate thesis2.pdf|grep '^PASS'"
+  artifacts:
+    paths:
+      - latex/thesis.pdf
+      - latex/thesis2.pdf
+
+testsuite_pdflatex:
+  stage: build
+  script:
+    - wget https://tech.utugit.fi/soft/thesis/testsuite/testsuite.tar.gz
+    - tar xf testsuite.tar.gz
+    - cp latex/*cls .
+    - ./bash_unit test_pdflatex.sh
+
+testsuite_xelatex:
+  stage: build
+  script:
+    - wget https://tech.utugit.fi/soft/thesis/testsuite/testsuite.tar.gz
+    - tar xf testsuite.tar.gz
+    - cp latex/*cls .
+    - ./bash_unit test_xelatex.sh
+    
+pages:
+  stage: deploy
+  image: registry.gitlab.utu.fi/tech/soft/tools/cms/site:latest
+  script:
+    - mkdir -p static
+    - cp -v latex/*.pdf static/
+    - /sitegen/bin/sitegen --singlefile
+  only:
+    - master
+  artifacts:
+    paths:
+      - public/

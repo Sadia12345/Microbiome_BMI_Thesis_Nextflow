@@ -1,0 +1,86 @@
+% ============================================================
+% CHAPTER 5: DISCUSSION
+% University of Turku, Faculty of Technology
+% MSc Thesis - Microbiome-Based BMI Prediction
+% ============================================================
+
+\chapter{Discussion}
+\label{ch:discussion}
+
+This chapter interprets the experimental findings, situates them within the broader scientific literature, and critically examines the limitations of the present study.
+
+\section{Interpretation of Results}
+
+\subsection{The Case for Non-Linear Models}
+
+The dominant finding of this thesis is the pronounced superiority of Random Forest over Elastic Net for BMI prediction ($R^2$ = 0.325 vs.\ 0.14). This 132\% relative improvement is not merely a statistical curiosity---it reflects a fundamental property of microbiome data: the relationship between gut composition and host phenotype is governed by complex, high-order interactions that linear models cannot represent.
+
+Consider, for example, the well-documented antagonism between \emph{Akkermansia muciniphila} and several \emph{Firmicutes} species. The metabolic impact of \emph{Akkermansia} may depend on the abundance of its competitors; a linear model treats each taxon as an independent additive term, missing such conditional effects. Decision trees, by contrast, naturally encode interaction terms through their hierarchical branching structure.
+
+\subsection{Biological Plausibility of Identified Taxa}
+
+The feature importance analysis identified \emph{Adlercreutzia equolifaciens} as the single most predictive species---a finding with compelling biological rationale. \emph{Adlercreutzia} is one of few gut bacteria capable of converting dietary isoflavones (abundant in soy products prevalent in Asian diets) into equol, a metabolite with estrogen-like properties. Equol modulates lipid metabolism and adipocyte differentiation, providing a mechanistic link between this bacterium and body composition \cite{setchell2002equol}.
+
+Similarly, the prominence of \emph{Roseburia lenta} aligns with the established role of butyrate-producing bacteria in metabolic health. Butyrate serves as the primary energy source for colonocytes, strengthens the gut epithelial barrier, and attenuates systemic inflammation---a triad of functions directly relevant to obesity pathophysiology \cite{louis2017formation}.
+
+The presence of unclassified species-level genome bins (SGBs) among the top predictors is equally intriguing. These taxa lack formal names but were detected consistently across the Metalog cohort; their predictive importance suggests that the ``dark matter'' of the microbiome harbors functionally significant organisms awaiting characterization.
+
+\section{Comparison with Prior Work}
+
+\subsection{Performance Benchmarks}
+
+Our $R^2$ of 0.325 for microbiome-only prediction compares favorably with the published literature. A 2024 meta-analysis of obesity-associated microbiome signatures reported that models incorporating demographic covariates alongside microbial features achieved $R^2$ values of 0.4--0.6 \cite{NIHMBMI2024}. Our deliberate exclusion of age, sex, and diet places our result at the lower bound of this range---yet it remains substantially above zero, confirming that microbial composition alone encodes meaningful metabolic information.
+
+Moreover, our choice to frame BMI prediction as a regression task (predicting continuous values) is more challenging than the classification approach (obese vs.\ normal weight) employed by many prior studies. Classification models benefit from the discretization of a continuous outcome, which can inflate apparent performance.
+
+\subsection{Algorithmic Considerations}
+
+The comparable performance of XGBoost, Random Forest, and Elastic Net observed in prior benchmarks \cite{topccuouglu2020framework} was not replicated here; Random Forest substantially outperformed the linear baseline. This discrepancy may reflect dataset characteristics: the Metalog dataset is unusually large (17,903 samples), diverse (multi-national), and high-dimensional (thousands of species). Under such conditions, ensemble methods have more ``room'' to capture complex structure that would saturate smaller datasets.
+
+\section{Scalability Insights}
+
+The saturation analysis revealed that predictive performance plateaus around 10,000 samples, with marginal gains thereafter. This finding has practical implications for study design in microbiome epidemiology:
+
+\begin{itemize}
+    \item \textbf{Resource allocation:} Researchers facing budget constraints can achieve 92\% of full-dataset performance with a moderately-sized cohort, reallocating funds to deeper sequencing or functional annotation.
+    \item \textbf{Diminishing returns:} Beyond a threshold, additional samples yield diminishing predictive gains. Future improvements may require richer features (metabolic pathways, strain-level resolution) rather than larger sample sizes.
+\end{itemize}
+
+The efficacy of the 1\% prevalence filter reinforces a counterintuitive principle: in high-dimensional microbiome data, \emph{less is more}. Rare taxa---those present in few individuals---contribute noise rather than signal; their exclusion sharpens the model's focus on reproducible, generalizable patterns.
+
+\section{Limitations}
+
+Several limitations merit acknowledgment:
+
+\subsection{Cross-Sectional Design}
+
+The Metalog dataset represents a cross-sectional snapshot; causal inference is not possible. While the model identifies associations between microbial composition and BMI, it cannot distinguish cause from consequence. Longitudinal or intervention studies are required to establish directionality.
+
+\subsection{Confounding}
+
+Despite excluding age, sex, and weight, unmeasured confounders (diet, medication, geography) may influence both microbiome composition and BMI. Future work should incorporate dietary questionnaires and medication histories to disentangle these effects.
+
+\subsection{Geographic and Dietary Bias}
+
+Although the Metalog consortium aggregates samples from multiple countries, the cohort may not fully represent global dietary diversity. Performance may vary in populations with distinct culinary traditions (e.g., high-fiber African diets vs.\ Western ultra-processed fare).
+
+\subsection{Taxonomic Resolution}
+
+MetaPhlAn4 provides species-level profiles, but strain-level variation---critical for functional inference---is not captured. Two strains of \emph{Lactobacillus reuteri}, for instance, may exert opposite metabolic effects. Future pipelines should integrate strain-level tools (e.g., StrainPhlAn, PanPhlAn).
+
+\subsection{Functional Annotation}
+
+This study relied exclusively on taxonomic composition. Microbes exert their effects through gene products; incorporating functional pathway abundances (e.g., KEGG modules) may improve predictive power and biological interpretability.
+
+\section{Implications and Future Directions}
+
+Despite its limitations, this work demonstrates that the gut microbiome contains a non-trivial, extractable signal predictive of host body composition---a signal accessible through standard machine learning pipelines on consumer-grade hardware.
+
+Future directions include:
+
+\begin{itemize}
+    \item \textbf{Multi-omics integration:} Combining metagenomic with metabolomic data to capture functional outputs of microbial metabolism.
+    \item \textbf{Explainable AI:} Applying SHAP (SHapley Additive exPlanations) values to quantify per-sample feature contributions.
+    \item \textbf{Prospective validation:} Testing the trained model on independent cohorts (e.g., UK Biobank, Flemish Gut Project) to assess generalizability.
+    \item \textbf{Therapeutic applications:} Using identified taxa as targets for dietary intervention or probiotic formulation.
+\end{itemize}

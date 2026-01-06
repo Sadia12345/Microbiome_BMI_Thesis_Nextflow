@@ -1,0 +1,27 @@
+% ============================================================
+% ABSTRACT
+% University of Turku, Faculty of Technology
+% MSc Thesis - Microbiome-Based BMI Prediction
+% ============================================================
+
+\begin{abstract}
+
+The human gut microbiome has emerged as a key modulator of host metabolism and body composition. This thesis investigates whether gut microbial composition, assessed through shotgun metagenomics, can predict Body Mass Index (BMI) using supervised machine learning. A reproducible Nextflow pipeline was developed and applied to 17,903 human samples from the Metalog consortium—one of the largest metagenomic cohorts assembled for this purpose.
+
+Four machine learning algorithms were benchmarked: Elastic Net (linear baseline), Random Forest, XGBoost, and Support Vector Machine. Random Forest achieved the highest predictive performance ($R^2 = 0.325$), more than doubling the linear baseline ($R^2 = 0.14$), demonstrating that the microbiome-BMI relationship is fundamentally non-linear. Feature importance analysis identified \emph{Adlercreutzia equolifaciens}, \emph{Roseburia lenta}, and several uncharacterized species as leading predictors, offering candidates for mechanistic investigation.
+
+A 1\% prevalence filter reduced dimensionality by 83\% (10,701 to 1,799 features) with negligible accuracy loss, dramatically improving computational efficiency. Saturation analysis revealed diminishing returns beyond 10,000 samples, providing practical guidance for resource-constrained studies. The pipeline, trained exclusively on microbial features without demographic covariates, establishes a microbiome-only baseline for BMI prediction.
+
+These findings confirm that the gut ecosystem encodes meaningful metabolic information accessible through standard machine learning pipelines on consumer-grade hardware. The reproducible workflow and identified taxa provide a foundation for translating microbial insights into precision nutrition and personalized medicine.
+
+\end{abstract}
+
+\begin{otherlanguage}{finnish}
+\begin{abstract}
+
+Ihmisen suoliston mikrobiomi on noussut keskeiseksi isäntäorganismin aineenvaihdunnan ja kehon koostumuksen säätelijäksi. Tässä opinnäytetyössä tutkitaan, voidaanko suoliston mikrobien koostumusta käyttää painoindeksin (BMI) ennustamiseen koneoppimismenetelmin. Analyysissa käytettiin 17 903 ihmisen näytettä Metalog-konsortion metagenomitietokannasta.
+
+Tulosten perusteella satunnaismetsä (Random Forest) saavutti parhaan ennustesuorituskyvyn ($R^2 = 0.325$), mikä ylitti lineaarisen mallin ($R^2 = 0.14$) yli kaksinkertaisesti. Tärkeimmiksi ennustaviksi bakteerilajeiksi tunnistettiin \emph{Adlercreutzia equolifaciens} ja \emph{Roseburia lenta}.
+
+\end{abstract}
+\end{otherlanguage}

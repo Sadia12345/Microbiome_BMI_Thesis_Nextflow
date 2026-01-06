@@ -1,0 +1,35 @@
+# due to https://docs.docker.com/docker-hub/download-rate-limit/
+# the texlive image is hosted @ https://gitlab.utu.fi/tech/soft/thesis-builder
+
+image: registry.gitlab.utu.fi/tech/soft/thesis/builder:latest
+
+# build latex/thesis.tex -> latex/thesis.pdf using pdflatex
+# shell-escape functionality is required by the minted package
+build:
+  stage: build
+  script:
+    - cd latex
+    - latexmk -pdf --shell-escape thesis.tex
+  artifacts:
+    paths:
+      - latex/thesis.pdf
+
+# a validation prints "PASS + something" is the file is PDF/A conformant
+validate:
+  stage: test
+  script:
+    - pdfa-validate latex/thesis.pdf|grep '^PASS'
+  allow_failure: true
+
+pages:
+  stage: deploy
+  image: registry.gitlab.utu.fi/tech/soft/tools/cms/site:latest
+  script:
+    - mkdir -p static
+    - cp -v latex/*.pdf static/
+    - /sitegen/bin/sitegen --singlefile
+  only:
+    - master
+  artifacts:
+    paths:
+      - public/

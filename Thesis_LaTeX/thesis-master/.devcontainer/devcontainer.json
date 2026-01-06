@@ -1,0 +1,33 @@
+// For format details, see https://aka.ms/vscode-remote/devcontainer.json
+{
+    "name": "Thesis",
+    "dockerFile": "Dockerfile",
+    
+    // Uncomment the next line if you want to publish any ports.
+    // "appPort": [],
+    
+    "mounts": [
+        "source=${localWorkspaceFolder}/latex,target=/thesis,type=bind,consistency=cached"
+    ],
+
+    // Default container specific settings.json values
+    "settings":  {
+        "terminal.integrated.cwd": "/thesis",
+        "terminal.integrated.shell.linux": "/bin/bash",
+        "terminal.shell": "bash"
+    },
+    
+    "workspaceFolder": "/thesis",
+    
+    "shutdownAction": "none",
+    
+    
+    "extensions": [
+        "james-yu.latex-workshop",
+        "eamodio.gitlens",
+        "Gruntfuggly.todo-tree",
+        "sandcastle.vscode-open",
+        "timonwong.shellcheck",
+        "wayou.vscode-todo-highlight"
+    ]
+}

@@ -1,0 +1,51 @@
+% ============================================================
+% CHAPTER 6: CONCLUSION
+% University of Turku, Faculty of Technology
+% MSc Thesis - Microbiome-Based BMI Prediction
+% ============================================================
+
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+This thesis investigated the predictive capacity of the human gut microbiome for Body Mass Index using machine learning methods applied to one of the largest metagenomic cohorts assembled to date.
+
+\section{Summary of Contributions}
+
+The principal contributions of this work are:
+
+\begin{enumerate}
+    \item \textbf{Reproducible Pipeline:} A Nextflow-based workflow enabling end-to-end microbiome machine learning, portable across local and high-performance computing environments.
+    
+    \item \textbf{Algorithmic Benchmark:} A rigorous comparison demonstrating that Random Forest ($R^2$ = 0.325) substantially outperforms linear Elastic Net ($R^2$ = 0.14), confirming the non-linear nature of microbiome-phenotype relationships.
+    
+    \item \textbf{Feature Identification:} Identification of \emph{Adlercreutzia equolifaciens}, \emph{Roseburia lenta}, and several uncharacterized species as leading predictors of BMI, providing candidates for mechanistic and therapeutic investigation.
+    
+    \item \textbf{Scalability Analysis:} Demonstration that predictive performance saturates around 10,000 samples and that aggressive prevalence filtering (83\% feature reduction) incurs negligible accuracy loss while dramatically accelerating computation.
+\end{enumerate}
+
+\section{Answers to Research Questions}
+
+\textbf{Q1: Can machine learning models trained exclusively on gut microbiome composition predict host BMI with clinically meaningful accuracy?}
+
+Yes. The Random Forest model achieved an $R^2$ of 0.325---explaining approximately one-third of BMI variance---using only microbial features. While not sufficient for clinical diagnosis, this signal is biologically significant and confirms that the gut ecosystem encodes host metabolic information.
+
+\textbf{Q2: How do linear models compare to non-linear ensemble methods?}
+
+Linear models (Elastic Net) capture only a fraction of the predictive signal ($R^2$ = 0.14). Non-linear ensembles (Random Forest) more than double this performance, reflecting the complex, interactive nature of microbiome-phenotype relationships that additive models cannot represent.
+
+\textbf{Q3: What preprocessing strategies and sample sizes are sufficient for robust performance?}
+
+A 1\% prevalence filter reduces dimensionality by 83\% with negligible accuracy loss. Approximately 10,000 samples suffice to reach 92\% of full-dataset performance; beyond this threshold, additional samples yield diminishing returns.
+
+\section{Recommendations for Future Research}
+
+\begin{enumerate}
+    \item Extend the pipeline to include functional pathway-level features (KEGG, MetaCyc) for improved biological interpretability.
+    \item Validate the trained model on geographically independent cohorts to assess generalizability.
+    \item Conduct longitudinal studies to establish causal directionality between microbial taxa and metabolic outcomes.
+    \item Explore strain-level resolution using tools such as StrainPhlAn to capture within-species functional diversity.
+\end{enumerate}
+
+\section{Closing Remarks}
+
+The gut microbiome stands at the frontier of precision nutrition and personalized medicine. This thesis demonstrates that standard machine learning techniques, applied to publicly available metagenomic data, can extract meaningful predictive signals for host metabolic phenotypes. The reproducible pipeline and identified taxa provide a foundation for future research aimed at translating microbial insights into clinical and public health applications.
