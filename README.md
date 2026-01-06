@@ -18,9 +18,10 @@ This repository contains a scalable **Nextflow** pipeline to predict Body Mass I
 
 ### 2. Preprocessing Strategy (`mikropml`)
 We employ the `mikropml` package (Schloss Lab), the gold standard for microbiome machine learning, to ensure robust and reproducible preprocessing:
-*   **Zero-Variance Removal:** Bacterial species present in <1% of samples (Near-Zero Variance) are removed to reduce noise and dimensionality.
-*   **Normalization:** Feature abundances are scaled and centered (Mean=0, SD=1) to ensure algorithm stability across orders of magnitude.
-*   **Cross-Validation:** A strict **k-fold cross-validation** scheme is used to evaluate model generalizability and prevent overfitting.
+*   **1% Prevalence Filter:** Bacterial species present in <1% of samples are removed. This reduced features from **10,701 → 1,799** (83% reduction), dramatically improving computational efficiency.
+*   **Zero-Variance Removal:** Near-Zero Variance features are removed to reduce noise.
+*   **Normalization:** Feature abundances are scaled and centered (Mean=0, SD=1) to ensure algorithm stability.
+*   **Cross-Validation:** A strict **k-fold cross-validation** scheme is used to evaluate model generalizability.
 
 ### 3. Data Leakage Prevention (Critical)
 To ensure the model learns *biological* signals rather than mathematical tautologies, we implemented strict leakage prevention:
@@ -101,8 +102,15 @@ nextflow run main.nf -profile csc --executor slurm
 
 ### 🧬 Key Findings
 *   The microbiome has a **complex, non-linear relationship** with BMI.
-*   Random Forest drastically outperformed the linear model, capturing interactions between species that the simpler model missed.
-*   **Feature Importance:** Extraction of the top 20 predictive species is currently in progress.
+*   Random Forest drastically outperformed the linear model, capturing interactions between species.
+*   **Top Predictive Species:** *Adlercreutzia equolifaciens*, *Eisenbergiella tayi*, *Roseburia lenta*.
+
+### 📈 Saturation Analysis (Learning Curve)
+To address scalability limitations, we implemented a **Saturation Analysis**:
+*   **Goal:** Determine if prediction performance plateaus before using the full dataset.
+*   **Method:** Train RF on 1k, 5k, 10k, 15k, and 17k samples; plot $R^2$ vs. sample size.
+*   **Script:** `bin/run_saturation.R`
+*   **Output:** `saturation_r2.png`, `scaling_time.png`
 
 ---
 
