@@ -224,10 +224,10 @@
 %% bibliography
 %% - uses the biber / biblatex engine: supports utf-8 and easier formatting
 \ifdefstring{\utuftthesis@biburlbreak}{ragged}{
-  \RequirePackage[style=\utuftthesis@bibstyle,backend=biber,block=ragged]{biblatex}
+  \RequirePackage[style=\utuftthesis@bibstyle,backend=bibtex,block=ragged]{biblatex}
 }
 {
-  \RequirePackage[style=\utuftthesis@bibstyle,backend=biber]{biblatex} 
+  \RequirePackage[style=\utuftthesis@bibstyle,backend=bibtex]{biblatex} 
 }
 
 \RequirePackage{fvextra}                % minted

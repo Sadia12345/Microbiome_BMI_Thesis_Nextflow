@@ -22,12 +22,16 @@ opt <- parse_args(OptionParser(option_list = option_list))
 # Load data
 preproc <- readRDS(opt$input)
 
-# Run ML
+# Handle mikropml structure
+dat_input <- if("dat_transformed" %in% names(preproc)) preproc$dat_transformed else preproc$dat
+
+# Run ML with lightweight settings
 results <- run_ml(
-  dataset = preproc$dat_transformed,
+  dataset = dat_input,
   method = opt$method,
   outcome_colname = opt$outcome,
   kfold = 2,
+  cv_times = 1,
   seed = 100
 )
 

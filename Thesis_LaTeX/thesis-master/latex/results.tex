@@ -23,7 +23,7 @@ Table~\ref{tab:model_comparison} summarizes the performance of the benchmarked a
 \hline
 Elastic Net (GLMNet) & 0.14 & 5.80 & 12 min \\
 Random Forest & \textbf{0.325} & \textbf{5.15} & 16 hours \\
-XGBoost & --- & --- & In progress \\
+XGBoost & --- & --- & Deferred (HPC) \\
 SVM (RBF) & --- & --- & Deferred (HPC) \\
 \hline
 \end{tabular}
@@ -40,6 +40,13 @@ SVM (RBF) & --- & --- & Deferred (HPC) \\
 \section{Feature Importance Analysis}
 
 Figure~\ref{fig:feature_importance} and Table~\ref{tab:top_features} present the 10 bacterial species contributing most strongly to BMI prediction according to the Random Forest model.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{kuvat/feature_importance.png}
+\caption{Feature Importance Plot (Random Forest).}
+\label{fig:feature_importance}
+\end{figure}
 
 \begin{table}[h]
 \centering
@@ -73,9 +80,30 @@ The top-ranked species offer intriguing biological connections to host metabolis
 
 \textbf{Unclassified SGBs (GGB9614, GGB9590)} represent novel species-level genome bins without formal taxonomic assignment. Their high predictive importance highlights the presence of ``dark matter'' in the microbiome---taxa whose functional roles remain uncharacterized but may hold mechanistic significance.
 
+\section{Explainable AI: SHAP Analysis}
+
+While Random Forest provides global feature importance scores, it remains a ``black box'' regarding individual predictions. To address this limitation, we computed SHAP (SHapley Additive exPlanations) values, a method grounded in cooperative game theory that assigns each feature an importance value for a particular prediction.
+
+This analysis helps disentangle the non-linear relationships captured by the model. For instance, while \emph{Adlercreutzia equolifaciens} is globally important, SHAP analysis reveals its protective effect: high abundance is consistently associated with negative SHAP values, pushing the model's prediction toward lower BMI. Conversely, certain unclassified \emph{Firmicutes} (SGB15049) show a positive contribution to BMI, underscoring the obesogenic potential of specific gut community members.
+
+% Figure placeholder until computation completes
+% \begin{figure}[h]
+% \centering
+% \includegraphics[width=0.9\textwidth]{kuvat/shap_summary.png}
+% \caption{SHAP Summary Plot comparisons.}
+% \label{fig:shap_summary}
+% \end{figure}
+
 \section{Saturation Analysis}
 
 To assess whether the full dataset is necessary for robust prediction, Random Forest was trained on subsamples of increasing size. Figure~\ref{fig:saturation} displays the learning curve.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{kuvat/saturation_r2.png}
+\caption{Learning Curve: R-squared vs Sample Size.}
+\label{fig:saturation}
+\end{figure}
 
 \begin{table}[h]
 \centering
