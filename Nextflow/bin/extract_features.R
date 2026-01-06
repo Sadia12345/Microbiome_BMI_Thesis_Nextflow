@@ -8,26 +8,43 @@ suppressPackageStartupMessages(library(ggplot2))
 # Arguments
 args <- commandArgs(trailingOnly = TRUE)
 model_path <- args[1] # e.g., "results/rf_model.rds"
-data_path <- args[2]  # e.g., "results/preprocessed.rds"
-output_csv <- args[3] # e.g., "results/feature_importance.csv"
-output_plot <- args[4] # e.g., "results/feature_importance.png"
+# output_csv is now arg 2 since we removed data_path
+output_csv <- args[2] 
+output_plot <- args[3]
 
-if (is.na(model_path) || is.na(data_path)) {
-  stop("Missing arguments. Usage: script.R model.rds data.rds out.csv out.png")
+if (is.na(model_path)) {
+  stop("Missing arguments. Usage: script.R model.rds out.csv out.png")
 }
 
 message("Loading model from: ", model_path)
-model <- readRDS(model_path)
+model_list <- readRDS(model_path)
+# run_ml outputs a list with 'trained_model' and 'test_data'
+model <- model_list$trained_model
+test_dat <- model_list$test_data
 
-message("Loading data from: ", data_path)
-data_obj <- readRDS(data_path)
-# mikropml expects 'dat' for permutation importance
-# preprocessed.rds from mikropml::preprocess_data is usually a list with $dat and $outcome
-# We need to pass the dataframe.
-test_dat <- data_obj$dat
+if (is.null(test_dat)) {
+    stop("test_data not found in model object. Cannot calculate importance.")
+}
+message("Loaded test data from model object. Rows: ", nrow(test_dat))
 
-message("Extracting feature importance...")
-feat_imp <- mikropml::get_feature_importance(model, test_data = test_dat, outcome_colname = "bmi", class_probs = FALSE)
+message("Extracting feature importance (Direct Method)...")
+
+# Direct extraction from the underlying caret -> randomForest object
+# model is a caret 'train' object. model$finalModel is the randomForest object.
+if (is.null(model$finalModel)) {
+    stop("Result IS NOT a caret model with a finalModel component.")
+}
+
+# The importance matrix
+imp_mat <- model$finalModel$importance
+# Convert to dataframe
+feat_imp <- as.data.frame(imp_mat)
+feat_imp$feat <- rownames(feat_imp)
+# Rename the importance metric column (usually IncNodePurity or %IncMSE)
+# We will just take the first column and call it 'perf_metric_diff' to match structure
+colnames(feat_imp)[1] <- "perf_metric_diff"
+
+message("Extraction successful. Rows: ", nrow(feat_imp))
 
 # Save full importance data
 message("Saving importance to: ", output_csv)
