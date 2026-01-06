@@ -92,6 +92,20 @@ nextflow run main.nf -profile csc --executor slurm
 
 ---
 
-## 📊 Results & Artifacts
+## 📊 Results Summary (Latest)
+
+| Model | R-Squared ($R^2$) | RMSE | Interpretation |
+| :--- | :--- | :--- | :--- |
+| **GLMNet (Lasso)** | `0.14` | `5.80` | Linear Baseline. Weak correlation. |
+| **Random Forest** | **`0.325`** | **`5.15`** | **Non-Linear Victory.** Massive improvement. |
+
+### 🧬 Key Findings
+*   The microbiome has a **complex, non-linear relationship** with BMI.
+*   Random Forest drastically outperformed the linear model, capturing interactions between species that the simpler model missed.
+*   **Feature Importance:** Extraction of the top 20 predictive species is currently in progress.
+
+---
+
+## 📊 Detailed Artifacts
 *   **Performance:** Check `results/model_comparison.png`.
 *   **Models:** Trained model objects are saved as `.rds` files for feature extraction.

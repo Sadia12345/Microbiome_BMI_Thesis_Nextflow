@@ -27,7 +27,7 @@ data_obj <- readRDS(data_path)
 test_dat <- data_obj$dat
 
 message("Extracting feature importance...")
-feat_imp <- mikropml::get_feature_importance(model, test_data = test_dat, outcome_colname = "bmi")
+feat_imp <- mikropml::get_feature_importance(model, test_data = test_dat, outcome_colname = "bmi", class_probs = FALSE)
 
 # Save full importance data
 message("Saving importance to: ", output_csv)
