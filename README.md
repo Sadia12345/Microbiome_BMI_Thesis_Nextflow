@@ -6,14 +6,14 @@
 
 ---
 
-## 📌 Project Overview
+## Project Overview
 This repository contains the complete computational workflow and thesis manuscript for analyzing human gut microbiome data to predict **BMI (Body Mass Index)** and **Physical Activity Levels**.
 
 The core objective is to identify robust microbial biomarkers using interpretable machine learning models while ensuring methodological rigor (prevention of data leakage) and computational reproducibility.
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 This project is organized into two main components: the computational analysis (Nextflow) and the scientific manuscript (LaTeX).
 
 ```
@@ -38,7 +38,7 @@ Thesis_Project/
 
 ---
 
-## 🔬 Methodology & Data Strategy
+## Methodology & Data Strategy
 
 ### 1. Data Selection & Preprocessing
 To handle high-dimensional microbiome data (~10,000 species) on standard hardware, we implement a two-step filtering strategy:
@@ -52,13 +52,13 @@ To handle high-dimensional microbiome data (~10,000 species) on standard hardwar
 
 ### 3. Machine Learning Models
 We employ a triangulation approach using three distinct algorithms:
-*   **Random Forest (`rf`)**: Ensemble of decision trees. Robust to overfitting and handles non-linear interactions well.
-*   **XGBoost (`xgbTree`)**: Gradient boosting framework. Highly efficient and often achieves state-of-the-art accuracy.
-*   **Linear SVM (`svmLinear`)**: Support Vector Machine with a linear kernel. chosen for its memory efficiency (O(n)) compared to Radial kernels (O(n^2)) for this feature size.
+*   **Random Forest (rf)**: Ensemble of decision trees. Robust to overfitting and handles non-linear interactions well.
+*   **XGBoost (xgbTree)**: Gradient boosting framework. Highly efficient and often achieves state-of-the-art accuracy.
+*   **Linear SVM (svmLinear)**: Support Vector Machine with a linear kernel. chosen for its memory efficiency (O(n)) compared to Radial kernels (O(n^2)) for this feature size.
 
 ---
 
-## 💻 Technical Stack
+## Technical Stack
 
 *   **Workflow Engine:** [Nextflow](https://www.nextflow.io) (DSL2)
 *   **Language:** R (v4.x)
@@ -67,7 +67,7 @@ We employ a triangulation approach using three distinct algorithms:
 
 ---
 
-## 🚀 How to Run (Usage)
+## How to Run (Usage)
 
 ### System Requirements
 *   **OS:** macOS (Apple Silicon M2/M3) or Linux.
@@ -89,5 +89,5 @@ We employ a triangulation approach using three distinct algorithms:
 
 ---
 
-## ⚠️ Note on Existing Files
+## Note on Existing Files
 The `Thesis_LaTeX` folder and `thesis_final.pdf` contain the written thesis work. **Do not delete or modify these files** without backing them up, as they represent the final written submission.
