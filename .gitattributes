@@ -2,3 +2,7 @@
 *.tex linguist-generated=true
 *.bib linguist-generated=true
 *.cls linguist-generated=true
+.latexmkrc linguist-generated=true
+latexmkrc linguist-generated=true
+Dockerfile linguist-generated=true
+*.dockerfile linguist-generated=true
