@@ -72,13 +72,13 @@ Bacterial species present in fewer than 1\% of samples (approximately 179 indivi
 
 This aggressive filtering accelerates computation without sacrificing predictive signal, as rare taxa contribute primarily noise to ensemble models.
 
-\subsubsection{Near-Zero Variance Removal}
+\subsubsection{Variance Filtering (Top 1000)}
 
-Features with near-zero variance---those exhibiting minimal variation across samples---are identified and excluded using the \texttt{caret::nearZeroVar} function. This step further prunes uninformative predictors.
+To address the high dimensionality and computational resource constraints, a variance-based feature selection step was implemented. We computed the variance for all 1,799 prevalence-filtered features and retained only the \textbf{Top 1,000 features} with the highest variance. This step reduces noise by eliminating features that show little variation across the population, focusing the model on the most potentially discriminative taxa.
 
 \subsubsection{Centering and Scaling}
 
-Remaining features are centered (mean = 0) and scaled (standard deviation = 1) to ensure comparability across taxa with different abundance ranges. Importantly, scaling parameters are computed exclusively on training data and applied to test data, preventing information leakage.
+The selected 1,000 features are centered (mean = 0) and scaled (standard deviation = 1). Scaling parameters are computed on the training set and applied to the test set to prevent leakage.
 
 \section{Machine Learning Models}
 
@@ -86,31 +86,19 @@ Four algorithms were benchmarked, representing a spectrum from linear to highly 
 
 \subsection{Elastic Net (GLMNet)}
 
-Elastic Net combines L1 (Lasso) and L2 (Ridge) regularization:
-\begin{equation}
-\min_{\beta} \left\{ \frac{1}{2n} \| y - X\beta \|_2^2 + \lambda \left( \alpha \|\beta\|_1 + \frac{1-\alpha}{2} \|\beta\|_2^2 \right) \right\}
-\end{equation}
-where $\alpha$ controls the balance between penalties. Elastic Net performs implicit feature selection (setting coefficients to zero) and serves as a linear baseline \cite{zou2005regularization}.
+Elastic Net combines L1 (Lasso) and L2 (Ridge) regularization. It performs implicit feature selection and serves as a linear baseline \cite{zou2005regularization}.
 
 \subsection{Random Forest}
 
-Random Forest constructs an ensemble of $B$ decision trees, each trained on a bootstrap sample with a random subset of features at each split. Predictions are averaged across trees:
-\begin{equation}
-\hat{y} = \frac{1}{B} \sum_{b=1}^{B} T_b(x)
-\end{equation}
-This bagging strategy decorrelates trees, reducing variance and capturing non-linear interactions \cite{breiman2001random}.
+Random Forest constructs an ensemble of $B$ decision trees. We trained the model using 5-fold cross-validation. This bagging strategy decorrelates trees, reducing variance and capturing non-linear interactions \cite{breiman2001random}.
 
 \subsection{XGBoost}
 
-Extreme Gradient Boosting builds trees sequentially, with each tree correcting residuals from the previous iteration. The objective function includes a regularization term to prevent overfitting:
-\begin{equation}
-\mathcal{L} = \sum_{i} l(y_i, \hat{y}_i) + \sum_{k} \Omega(f_k)
-\end{equation}
-where $l$ is the loss function (squared error for regression) and $\Omega$ penalizes tree complexity \cite{chen2016xgboost}.
+Extreme Gradient Boosting builds trees sequentially, with each tree correcting residuals from the previous iteration. We utilized the \texttt{xgbTree} method in \texttt{caret}, which is highly efficient and robust \cite{chen2016xgboost}.
 
-\subsection{Support Vector Machine (SVM)}
+\subsection{Support Vector Machine (Linear)}
 
-SVM with a radial basis function (RBF) kernel maps data to a high-dimensional space where linear separation corresponds to non-linear decision boundaries in the original space. Due to its $O(n^3)$ complexity, SVM training on the full dataset was computationally prohibitive on local hardware and is deferred to future HPC-based experiments.
+While SVM with a radial basis function (RBF) kernel is powerful, it scales poorly ($O(n^3)$) with sample size. To enable training on the full dataset (18,000 samples) within local hardware memory limits, we employed \textbf{Linear SVM} (\texttt{svmLinear}). This approach finds the optimal separating hyperplane in the feature space with significantly lower computational overhead ($O(n)$) compared to kernel methods.
 
 \section{Evaluation Framework}
 
