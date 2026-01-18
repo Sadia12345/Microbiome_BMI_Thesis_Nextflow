@@ -89,5 +89,4 @@ We employ a triangulation approach using three distinct algorithms:
 
 ---
 
-## Note on Existing Files
-The `Thesis_LaTeX` folder and `thesis_final.pdf` contain the written thesis work. **Do not delete or modify these files** without backing them up, as they represent the final written submission.
+
