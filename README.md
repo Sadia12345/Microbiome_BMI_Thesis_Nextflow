@@ -1,35 +1,93 @@
-# Microbiome Biomarker Discovery for Thesis
+# Microbiome-Based Machine Learning for BMI Prediction
 
-This repository contains the machine learning workflow for analyzing microbiome data to predict BMI and Activity levels.
+**Master's Thesis Project**
+**Advisor:** Professor Leo Lahti
+**University of Turku**
 
-## Project Overview
+---
 
-**Objective:** Identify robust microbiome biomarkers associated with BMI and physical activity.
+## 📌 Project Overview
+This repository contains the complete computational workflow and thesis manuscript for analyzing human gut microbiome data to predict **BMI (Body Mass Index)** and **Physical Activity Levels**.
 
-**Methodology:**
-1.  **Data Preprocessing:**
-    *   Prevalence Filtering: Retain features present in >1% of samples.
-    *   **Variance Filtering:** Select Top 1000 features by variance to reduce dimensionality and noise (Bioinformatics Standard).
-2.  **Machine Learning Models:**
-    *   Random Forest (RF)
-    *   XGBoost (xgbTree)
-    *   Support Vector Machine (svmLinear)
-3.  **Validation:**
-    *   5-Fold Cross-Validation for robust performance estimation.
-4.  **Output:**
-    *   High-resolution SVG plots for thesis inclusion.
+The core objective is to identify robust microbial biomarkers using interpretable machine learning models while ensuring methodological rigor (prevention of data leakage) and computational reproducibility.
 
-## Workflow
+---
 
-The analysis is implemented using **Nextflow** for reproducibility and scalability.
+## 📂 Repository Structure
+This project is organized into two main components: the computational analysis (Nextflow) and the scientific manuscript (LaTeX).
 
-### Usage
-
-Run the workflow using Nextflow:
-```bash
-nextflow run main.nf
+```
+Thesis_Project/
+├── Nextflow/                  # AUTOMATED ANALYSIS PIPELINE
+│   ├── main.nf                # Master workflow script
+│   ├── nextflow.config        # Resource configuration (Sequential for 8GB RAM)
+│   ├── bin/                   # R/Python scripts
+│   │   ├── preprocess.R       # Data cleaning & Variance filtering
+│   │   ├── train_ml.R         # ML Training (RF, XGBoost, SVM)
+│   │   └── plot_comparison.R  # Visualization (SVG)
+│   └── results/               # Output plots and model files
+│
+├── Thesis_LaTeX/              # THESIS MANUSCRIPT
+│   └── thesis-master/         # LaTeX source code
+│
+├── Data/
+│   └── metalog_subset.csv     # Input Microbiome dataset
+│
+└── thesis_final.pdf           # Final compiled thesis document
 ```
 
-### Dependencies
-*   Nextflow
-*   R (with mikropml, caret, xgboost, kernlab, svglite)
+---
+
+## 🔬 Methodology & Data Strategy
+
+### 1. Data Selection & Preprocessing
+To handle high-dimensional microbiome data (~10,000 species) on standard hardware, we implement a two-step filtering strategy:
+*   **Prevalence Filtering:** Taxa present in <1% of samples are removed to eliminate noise.
+*   **Variance Filtering (Top 1000):** We select the **Top 1000 features** with the highest variance. This is a standard bioinformatics approach to retain features that carry the most information while reducing dimensionality.
+
+### 2. Leakage Prevention
+**Data leakage** (using testing data during training) is a critical risk in ML. We prevent this by:
+*   **Separation:** Preprocessing (Scaling/Centering) is calculated *within* the workflow.
+*   **Cross-Validation:** We use **5-Fold Cross-Validation** (k=5). The model is trained on 80% of the data and validated on a distinct 20% in each iteration. Hyperparameter tuning happens strictly within the training folds.
+
+### 3. Machine Learning Models
+We employ a triangulation approach using three distinct algorithms:
+*   **Random Forest (`rf`)**: Ensemble of decision trees. Robust to overfitting and handles non-linear interactions well.
+*   **XGBoost (`xgbTree`)**: Gradient boosting framework. Highly efficient and often achieves state-of-the-art accuracy.
+*   **Linear SVM (`svmLinear`)**: Support Vector Machine with a linear kernel. chosen for its memory efficiency (O(n)) compared to Radial kernels (O(n^2)) for this feature size.
+
+---
+
+## 💻 Technical Stack
+
+*   **Workflow Engine:** [Nextflow](https://www.nextflow.io) (DSL2)
+*   **Language:** R (v4.x)
+*   **Libraries:** `mikropml` (pipeline), `caret` (training), `data.table` (fast I/O), `svglite` (vector graphics).
+*   **Version Control:** Git & GitHub.
+
+---
+
+## 🚀 How to Run (Usage)
+
+### System Requirements
+*   **OS:** macOS (Apple Silicon M2/M3) or Linux.
+*   **RAM:** Minimum 8GB (Pipeline is optimized for sequential execution).
+*   **Dependencies:** Nextflow, R, Conda.
+
+### Execution
+1.  Navigate to the workflow directory:
+    ```bash
+    cd Nextflow
+    ```
+2.  Run the pipeline:
+    ```bash
+    nextflow run main.nf
+    ```
+3.  **Outputs:**
+    *   `results/model_comparison.svg`: Final publication-ready plot.
+    *   `results/*.rds`: Trained model objects.
+
+---
+
+## ⚠️ Note on Existing Files
+The `Thesis_LaTeX` folder and `thesis_final.pdf` contain the written thesis work. **Do not delete or modify these files** without backing them up, as they represent the final written submission.
