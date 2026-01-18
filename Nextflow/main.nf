@@ -40,11 +40,52 @@ workflow {
     preproc_ch = Preprocess(data_ch)
     
     // Define methods to run
-    // Define methods to run
-    methods_ch = Channel.from("xgbTree")
+    methods_ch = Channel.from("xgbTree", "rf", "svmLinear")
     
     // Combine method name with data for parallel execution
     train_input_ch = methods_ch.combine(preproc_ch)
     
     TrainModel(train_input_ch)
+    
+    // Collect all results for plotting
+    // Nextflow DSL2 allows accessing output channels
+    // We collect all result CSVs
+    results_ch = TrainModel.out[0].collect()
+    
+    PlotResults(results_ch)
+
+    // Run Saturation Analysis (Sequential, after others to save resources)
+    SaturationAnalysis(preproc_ch)
+}
+
+process PlotResults {
+    publishDir params.outdir, mode: 'copy'
+    
+    input:
+    path results_csvs
+
+    output:
+    path "model_comparison.svg"
+
+    script:
+    """
+    Rscript $baseDir/bin/plot_comparison.R
+    """
+}
+
+process SaturationAnalysis {
+    publishDir "${params.outdir}/saturation", mode: 'copy'
+
+    input:
+    path preprocessed_data
+
+    output:
+    path "saturation_r2.svg"
+    path "scaling_time.svg"
+    path "saturation_results.csv"
+
+    script:
+    """
+    Rscript $baseDir/bin/run_saturation.R --input $preprocessed_data --outdir ./ --outcome ${params.outcome}
+    """
 }

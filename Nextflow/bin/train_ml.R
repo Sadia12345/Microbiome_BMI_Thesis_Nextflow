@@ -7,6 +7,8 @@ library(dplyr)
 
 # Increase future globals limit to 20GB to handle large Metalog dataset
 options(future.globals.maxSize = 20000 * 1024^2)
+# Force sequential execution to prevent OOM on local machine
+future::plan(future::sequential)
 
 
 option_list <- list(
@@ -25,12 +27,16 @@ preproc <- readRDS(opt$input)
 # Handle mikropml structure
 dat_input <- if("dat_transformed" %in% names(preproc)) preproc$dat_transformed else preproc$dat
 
+# Sanitize column names for caret compatibility (XGBoost/SVM require valid R names)
+colnames(dat_input) <- make.names(colnames(dat_input))
+opt$outcome <- make.names(opt$outcome)
+
 # Run ML with lightweight settings
 results <- run_ml(
   dataset = dat_input,
   method = opt$method,
   outcome_colname = opt$outcome,
-  kfold = 2,
+  kfold = 5,
   cv_times = 1,
   seed = 100
 )

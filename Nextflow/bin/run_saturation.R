@@ -1,27 +1,37 @@
 #!/usr/bin/env Rscript
 
+library(optparse)
 library(mikropml)
 library(dplyr)
 library(ggplot2)
 library(caret)
+library(svglite)
 
-# Arguments
-args <- commandArgs(trailingOnly = TRUE)
-data_path <- args[1] # e.g., "results/preprocessed.rds"
-out_dir <- args[2]   # e.g., "results/saturation"
+# Argument Parsing
+option_list <- list(
+  make_option(c("-i", "--input"), type = "character", help = "Input preprocessed RDS"),
+  make_option(c("-o", "--outdir"), type = "character", help = "Output directory"),
+  make_option(c("-c", "--outcome"), type = "character", default = "bmi", help = "Outcome column name")
+)
 
-if (is.na(data_path) || is.na(out_dir)) {
-  stop("Usage: Rscript run_saturation.R <preprocessed.rds> <out_dir>")
+opt <- parse_args(OptionParser(option_list = option_list))
+
+if (is.null(opt$input) || is.null(opt$outdir)) {
+  stop("Usage: Rscript run_saturation.R --input <rds> --outdir <dir> [--outcome <col>]")
 }
 
-if (!dir.exists(out_dir)) {
-  dir.create(out_dir, recursive = TRUE)
+if (!dir.exists(opt$outdir)) {
+  dir.create(opt$outdir, recursive = TRUE)
 }
 
-message("Loading preprocessed data: ", data_path)
-data_obj <- readRDS(data_path)
-dat <- data_obj$dat_transformed
-outcome_col <- "bmi" # Hardcoded for now as per pipeline
+message("Loading preprocessed data: ", opt$input)
+data_obj <- readRDS(opt$input)
+# Handle potential list structure from preprocess.R
+dat <- if("dat_transformed" %in% names(data_obj)) data_obj$dat_transformed else data_obj$dat
+
+# Sanitize again to be safe (though main pipeline does it)
+colnames(dat) <- make.names(colnames(dat))
+outcome_col <- make.names(opt$outcome)
 
 message("Total samples: ", nrow(dat))
 
@@ -43,15 +53,14 @@ for (n in sizes) {
     message("------------------------------------------------")
     message("Running for sample size: ", n)
     
-    # Subsample (stratified not strictly necessary for regression but good practice)
-    # Simple random sample
+    # Subsample 
     set.seed(42)
     sample_idxs <- sample(seq_len(nrow(dat)), size = n)
     sub_dat <- dat[sample_idxs, ]
     
     # Run ML (RF)
-    # Using 'rf' but with FASTER controls for saturation check (e.g. fewer CV folds)
-    # 2-fold CV is enough to get a performance estimate for the trend line
+    # Using 'rf' but with FASTER controls for saturation check
+    # 2-fold CV is enough to get a performance trend
     start_time <- Sys.time()
     
     ml_res <- run_ml(
@@ -82,14 +91,14 @@ for (n in sizes) {
     ))
     
     # Save intermediate
-    write.csv(results_df, file.path(out_dir, "saturation_results_partial.csv"), row.names = FALSE)
+    write.csv(results_df, file.path(opt$outdir, "saturation_results_partial.csv"), row.names = FALSE)
 }
 
 # Save final
-final_csv <- file.path(out_dir, "saturation_results.csv")
+final_csv <- file.path(opt$outdir, "saturation_results.csv")
 write.csv(results_df, final_csv, row.names = FALSE)
 
-# Plotting
+# Plotting (SVG)
 p1 <- ggplot(results_df, aes(x = n_samples, y = r_squared)) +
     geom_line(color = "blue", linewidth = 1) +
     geom_point(size = 3) +
@@ -100,7 +109,7 @@ p1 <- ggplot(results_df, aes(x = n_samples, y = r_squared)) +
     theme_minimal() +
     ylim(0, max(results_df$r_squared) * 1.2)
 
-ggsave(file.path(out_dir, "saturation_r2.png"), p1, width = 6, height = 4)
+ggsave(file.path(opt$outdir, "saturation_r2.svg"), p1, width = 6, height = 4)
 
 p2 <- ggplot(results_df, aes(x = n_samples, y = time_sec)) +
     geom_line(color = "red", linewidth = 1) +
@@ -111,6 +120,6 @@ p2 <- ggplot(results_df, aes(x = n_samples, y = time_sec)) +
          y = "Time (seconds)") +
     theme_minimal()
 
-ggsave(file.path(out_dir, "scaling_time.png"), p2, width = 6, height = 4)
+ggsave(file.path(opt$outdir, "scaling_time.svg"), p2, width = 6, height = 4)
 
-message("Saturation Analysis Complete. Results saved to ", out_dir)
+message("Saturation Analysis Complete. Results saved to ", opt$outdir)
