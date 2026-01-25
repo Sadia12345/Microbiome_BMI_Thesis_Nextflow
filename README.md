@@ -1,10 +1,6 @@
-# Microbiome-Based Machine Learning for BMI Prediction
+# Microbiome-Based BMI Prediction Thesis
 
-**Master's Thesis Project**
-**Advisor:** Professor Leo Lahti
-**University of Turku**
-
----
+This repository contains the complete computational workflow for the Master's Thesis: **"Predicting BMI from Human Gut Microbiome Composition using Machine Learning"**.
 
 ## Project Overview
 This repository contains the complete computational workflow and thesis manuscript for analyzing human gut microbiome data to predict **BMI (Body Mass Index)** and **Physical Activity Levels**.
