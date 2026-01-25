@@ -2,9 +2,51 @@
 
 **Master's Thesis Project (2025-2026)**
 **University of Turku**
+
 **Advisor:** Professor Leo Lahti
 
 ## Abstract
+This repository contains the computational workflow for the Master's Thesis titled **"Predicting BMI from Human Gut Microbiome Composition using Machine Learning"**.
+
+...
+
+## Detailed Execution Guide (Technical)
+
+To reproduce the analysis from scratch, follow these engineering steps:
+
+### 1. Environment Initialization
+Ensure you have `Nextflow` (v23+) and `Conda` installed. The pipeline handles all dependency resolution automatically via the `environment.yml` file.
+
+### 2. Data Staging
+The pipeline expects the input matrix in specific format.
+*   **Path:** `Data/human_metaphlan4_species.tsv`
+*   **Format:** Rows = Samples, Columns = Species (Taxa).
+
+### 3. Pipeline Execution
+Run the following command in your terminal. This will trigger the entire workflow (Preprocessing $\rightarrow$ Training $\rightarrow$ Plotting).
+
+```bash
+# Basic Run
+nextflow run Nextflow/main.nf -profile conda
+
+# To Resume a Failed Run (Cached)
+nextflow run Nextflow/main.nf -profile conda -resume
+
+# To Visualize the DAG (Workflow Graph)
+nextflow run Nextflow/main.nf -profile conda -with-dag pipeline_dag.html
+```
+
+### 4. Output Artifacts
+Results are automatically published to the `Nextflow/results/` directory:
+*   **Saturation Curve:** `Nextflow/results/saturation/saturation_r2.svg` (The final evaluation plot).
+*   **Top Biomarkers:** `Nextflow/results/feature_importance.png`.
+*   **Model Objects:** `Nextflow/results/*.rds` (Serialized R models for future prediction).
+
+### 5. Cleaning
+To save disk space after analysis:
+```bash
+nextflow clean -f
+```
 This repository contains the computational workflow for the Master's Thesis titled **"Predicting BMI from Human Gut Microbiome Composition using Machine Learning"**. The study rigorously benchmarks four machine learning algorithms (Random Forest, Linear SVM, Decision Trees, and XGBoost) on a dataset of 18,000 human gut microbiome samples (Metaphlan4 profiles). The primary objective was to determine the feasibility of microbiome-based BMI prediction and to identify the optimal sample size required for robust model generalization through a comprehensive saturation analysis.
 
 ## Key Findings
