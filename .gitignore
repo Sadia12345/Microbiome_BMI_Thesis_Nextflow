@@ -1,0 +1,27 @@
+# System
+.DS_Store
+
+# LaTeX Artifacts
+*.pdf
+*.log
+*.aux
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+Thesis_LaTeX/
+
+# Data & Models (Strict Code Only)
+Data/
+Nextflow/work/
+Nextflow/.nextflow/
+*.rds
+*.csv
+*.zip
+
+# Nextflow Reports
+.nextflow.log*
+trace.txt
+timeline.html
+report.html

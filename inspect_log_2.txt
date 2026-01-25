@@ -1,0 +1,9 @@
+STARTING INSPECTION
+Reading RDS file...
+RDS Read Successfully.
+Class of object: list
+Names in list: trained_model, test_data, performance, feature_importance
+Found 'trained_model'. Class: train
+Found 'feature_importance'. Content:
+[1] "Skipped feature importance"
+FINISHED INSPECTION

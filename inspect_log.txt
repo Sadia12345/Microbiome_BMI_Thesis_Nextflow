@@ -1,0 +1,7 @@
+STARTING INSPECTION
+Reading RDS file...
+RDS Read Successfully.
+Class of object: list
+Names in list: trained_model, test_data, performance, feature_importance
+Found 'trained_model'. Class: train
+FINISHED INSPECTION
