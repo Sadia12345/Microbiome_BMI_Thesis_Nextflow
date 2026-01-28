@@ -1,4 +1,4 @@
-# Predicting Human BMI from Gut Microbiome using Machine Learning
+# Microbiome-BMI Prediction Pipeline
 
 **Master's Thesis Project (2025-2026)**
 **University of Turku**
@@ -6,7 +6,7 @@
 **Advisor:** Professor Leo Lahti
 
 ## Project Overview
-This repository contains the **computational pipeline** developed for the Master's Thesis: **"Predicting BMI from Human Gut Microbiome Composition using Machine Learning"**.
+This repository contains the **computational pipeline** developed for a Master's Thesis study investigating **machine learning approaches for predicting BMI from human gut microbiome data**.
 
 It provides a fully reproducible Nextflow workflow to:
 1.  **Preprocess** large-scale metagenomic data (Metalog Consortium).
