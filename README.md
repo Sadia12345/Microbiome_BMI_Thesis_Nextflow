@@ -18,13 +18,18 @@ To reproduce the analysis from scratch, follow these engineering steps:
 Ensure you have `Nextflow` (v23+) and `Conda` installed. The pipeline handles all dependency resolution automatically via the `environment.yml` file.
 
 ### 2. Data Staging
-This pipeline processes human gut metagenomic data. Due to size constraints, the raw data is not hosted on GitHub.
-*   **Source:** Obtain the `human_metaphlan4_species.tsv` file from the **Metalog Consortium** database (or request access from the University of Turku Data Repository).
-*   **Action:** Copy the file to the `Data/` directory:
-    ```bash
-    mkdir -p Data
-    cp /path/to/downloaded/human_metaphlan4_species.tsv Data/
-    ```
+This pipeline requires data from the Metalog Consortium, split into Metadata and Taxonomy.
+*   **Files Required:**
+    1.  `human_extended_wide.tsv` (Metadata: ID, BMI, Age, etc.)
+    2.  `human_metaphlan4_species.tsv` (Taxonomy: Species Abundance)
+*   **Action:** Copy both files to the `Data/` directory.
+
+### 3. Data Preparation (Merge)
+Before running the pipeline, you must merge the metadata and taxonomy into a single input CSV.
+```bash
+# This creates 'Data/metalog_subset.csv'
+python Nextflow/bin/merge_metalog.py
+```
 
 ### 3. Pipeline Execution
 Run the following command in your terminal. This will trigger the entire workflow (Preprocessing $\rightarrow$ Training $\rightarrow$ Plotting).
