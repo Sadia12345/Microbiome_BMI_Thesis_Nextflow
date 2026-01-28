@@ -5,8 +5,13 @@
 
 **Advisor:** Professor Leo Lahti
 
-## Abstract
-This repository contains the computational workflow for the Master's Thesis titled **"Predicting BMI from Human Gut Microbiome Composition using Machine Learning"**.
+## Project Overview
+This repository contains the **computational pipeline** developed for the Master's Thesis: **"Predicting BMI from Human Gut Microbiome Composition using Machine Learning"**.
+
+It provides a fully reproducible Nextflow workflow to:
+1.  **Preprocess** large-scale metagenomic data (Metalog Consortium).
+2.  **Train** machine learning models (Random Forest, SVM) to predict BMI.
+3.  **Analyze** performance scaling via Saturation Analysis.
 
 ...
 
