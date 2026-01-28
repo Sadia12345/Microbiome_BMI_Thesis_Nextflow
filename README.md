@@ -18,9 +18,13 @@ To reproduce the analysis from scratch, follow these engineering steps:
 Ensure you have `Nextflow` (v23+) and `Conda` installed. The pipeline handles all dependency resolution automatically via the `environment.yml` file.
 
 ### 2. Data Staging
-The pipeline expects the input matrix in specific format.
-*   **Path:** `Data/human_metaphlan4_species.tsv`
-*   **Format:** Rows = Samples, Columns = Species (Taxa).
+This pipeline processes human gut metagenomic data. Due to size constraints, the raw data is not hosted on GitHub.
+*   **Source:** Obtain the `human_metaphlan4_species.tsv` file from the **Metalog Consortium** database (or request access from the University of Turku Data Repository).
+*   **Action:** Copy the file to the `Data/` directory:
+    ```bash
+    mkdir -p Data
+    cp /path/to/downloaded/human_metaphlan4_species.tsv Data/
+    ```
 
 ### 3. Pipeline Execution
 Run the following command in your terminal. This will trigger the entire workflow (Preprocessing $\rightarrow$ Training $\rightarrow$ Plotting).
