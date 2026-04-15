@@ -94,7 +94,7 @@ This repository maintains a **Code-Only** policy to ensure privacy compliance an
 
 ## Computational Methodology
 The analysis pipeline is built using **Nextflow** for reproducibility and scalability.
-1.  **Univariate Filtering:** To handle high-dimensionality, we apply a variance-based filter, selecting the top 1,000 most variable inter-individual features.
+1.  **Univariate Filtering:** To handle high-dimensionality, we apply a variance-based filter, selecting the top 500 most variable inter-individual features.
 2.  **Cross-Validation:** Models are validated using **3-Fold Cross-Validation** to ensure robust error estimation while maintaining computational feasibility on large datasets (N=18,000).
 3.  **Saturation Analysis:** We iteratively train models on subsamples ranging from 2,000 to 16,000 samples (step=2,000) to empirically derive the learning curve and determine data sufficiency.
 
