@@ -1,112 +1,140 @@
-# Microbiome-BMI Prediction Pipeline
+# Microbiome-Based Body Mass Index Prediction: Nextflow Workflow
 
-**Master's Thesis Project (2025-2026)**
-**University of Turku**
+This repository contains the code-only Nextflow workflow used in the master's thesis **"Microbiome-Based Body Mass Index Prediction: A Scalable Machine Learning Benchmark for Large-Scale Metagenomic Data"** (University of Turku, ICT / Data Analytics).
 
-**Advisor:** Professor Leo Lahti
+**Author:** Sadia Zaman  
+**Supervisors:** Professor Leo Lahti; Geraldson Muluh
 
-## Project Overview
-This repository contains the **computational pipeline** developed for a Master's Thesis study investigating **machine learning approaches for predicting BMI from human gut microbiome data**.
+The repository documents a reproducible, local-hardware-oriented benchmarking workflow for microbiome-only BMI prediction from large-scale human gut metagenomic taxonomic profiles. It focuses on preprocessing, sample-size scaling, model comparison, and feature-ranking outputs under the implementation constraints described in the thesis.
 
-It provides a fully reproducible Nextflow workflow to:
-1.  **Preprocess** large-scale metagenomic data (Metalog Consortium).
-2.  **Train** machine learning models (Random Forest, SVM) to predict BMI.
-3.  **Analyze** performance scaling via Saturation Analysis.
+## Scope of the Repository
 
-...
+The workflow supports:
+- merging Metalog-derived metadata and MetaPhlAn 4 species profiles into a working matrix
+- prevalence filtering and variance-based feature reduction
+- microbiome-only BMI regression benchmarking across increasing sample sizes
+- generation of model-comparison, saturation, scalability, and feature-ranking figures
+- exploratory scripts for additional model families and interpretation routines
 
-## Detailed Execution Guide (Technical)
+This repository is a **code-only** release. Large Metalog-derived input tables, private local run artifacts, and the thesis manuscript itself are not redistributed here.
 
-To reproduce the analysis from scratch, follow these engineering steps:
+## Study Context
 
-### 1. Environment Initialization
-Ensure you have `Nextflow` (v23+) and `Conda` installed. The pipeline handles all dependency resolution automatically via the `environment.yml` file.
+In the thesis benchmark, the Nextflow workflow was used to evaluate whether species-level gut microbiome composition alone contains enough information to support population-scale BMI prediction under realistic local-computing constraints. The workflow emphasized:
+- transparent preprocessing order
+- scalable execution on consumer-grade hardware
+- comparison of linear and non-linear model behavior
+- empirical learning-curve analysis across sample sizes
 
-### 2. Data Staging
-This pipeline requires data from the Metalog Consortium, split into Metadata and Taxonomy.
-*   **Files Required:**
-    1.  `human_extended_wide.tsv` (Metadata: ID, BMI, Age, etc.)
-    2.  `human_metaphlan4_species.tsv` (Taxonomy: Species Abundance)
-*   **Action:** Copy both files to the `Data/` directory.
+The benchmark should be read as a workflow-based predictive study, not as a claim of causal inference or a clinically deployable BMI model.
 
-### 3. Data Preparation (Merge)
-Before running the pipeline, you must merge the metadata and taxonomy into a single input CSV.
+## Main Benchmark Characteristics
+
+The interpreted Nextflow benchmark in the thesis used:
+- an 80/20 train-test split inside `mikropml::run_ml()`
+- 3-fold cross-validation with one cross-validation repeat
+- one random subset draw at each sample-size step from 2,000 to 16,000 samples
+- a microbiome-only predictor set with non-microbial metadata excluded from model fitting
+- a 1% prevalence filter followed, when needed, by a variance-based top-500 feature filter
+
+Random Forest was the strongest retained model in the main Nextflow benchmark, outperforming the retained linear baselines under the implemented settings. The learning-curve analysis suggested diminishing predictive gains after roughly 12,000 samples, rather than indefinite improvement with larger taxonomic input alone.
+
+These findings are specific to the implemented workflow, the Metalog-derived analysis matrix, and the species-level relative-abundance representation used in the thesis.
+
+## XGBoost Status
+
+The repository contains exploratory XGBoost scripts because boosting was investigated during development. However, XGBoost was not retained as a stable interpreted result in the final thesis benchmark from this workflow. Platform-specific compatibility and stability issues on the Apple Silicon environment prevented a consistent retained benchmark output for the final write-up.
+
+## Repository Layout
+
+```text
+.
+|-- Nextflow/
+|   |-- main.nf
+|   |-- nextflow.config
+|   |-- bin/
+|   |   |-- merge_metalog.py
+|   |   |-- preprocess.R
+|   |   |-- train_ml.R
+|   |   |-- run_saturation.R
+|   |   |-- plot_comparison.R
+|   |   |-- extract_features*.R
+|   |   |-- run_shap.R
+|   |   |-- run_xgboost_light.R
+|   |   `-- run_xgboost_native.R
+|   `-- results/
+|       |-- feature_importance.png
+|       |-- model_comparison.png
+|       `-- saturation/
+|           |-- saturation_r2.png
+|           `-- scaling_time.png
+|-- README.md
+`-- inspect_log*.txt
+```
+
+## Input Data
+
+The workflow expects two Metalog-derived inputs before matrix construction:
+- `human_extended_wide.tsv` for metadata
+- `human_metaphlan4_species.tsv` for species-level taxonomic abundances
+
+These are merged by sample identifier using the repository's preprocessing utilities. Access to the underlying data remains subject to the relevant dataset-governance constraints.
+
+## Technical Execution Guide
+
+### 1. Environment Setup
+
+Ensure that Nextflow and Conda are available in your environment.
+
+### 2. Data Placement
+
+Place the required input tables in the local data location used by the workflow.
+
+### 3. Matrix Construction
+
+Before the main run, merge metadata and species profiles into a working matrix:
+
 ```bash
-# This creates 'Data/metalog_subset.csv'
 python Nextflow/bin/merge_metalog.py
 ```
 
-### 3. Pipeline Execution
-Run the following command in your terminal. This will trigger the entire workflow (Preprocessing $\rightarrow$ Training $\rightarrow$ Plotting).
+### 4. Pipeline Execution
+
+Basic run:
 
 ```bash
-# Basic Run
 nextflow run Nextflow/main.nf -profile conda
+```
 
-# To Resume a Failed Run (Cached)
+Resume a cached run:
+
+```bash
 nextflow run Nextflow/main.nf -profile conda -resume
+```
 
-# To Visualize the DAG (Workflow Graph)
+Optional DAG output:
+
+```bash
 nextflow run Nextflow/main.nf -profile conda -with-dag pipeline_dag.html
 ```
 
-### 4. Output Artifacts
-Results are automatically published to the `Nextflow/results/` directory:
-*   **Saturation Curve:** `Nextflow/results/saturation/saturation_r2.svg` (The final evaluation plot).
-*   **Top Biomarkers:** `Nextflow/results/feature_importance.png`.
-*   **Model Objects:** `Nextflow/results/*.rds` (Serialized R models for future prediction).
+## Output Artifacts
 
-### 5. Cleaning
-To save disk space after analysis:
-```bash
-nextflow clean -f
-```
-This repository contains the computational workflow for the Master's Thesis titled **"Predicting BMI from Human Gut Microbiome Composition using Machine Learning"**. The study rigorously benchmarks four machine learning algorithms (Random Forest, Linear SVM, Decision Trees, and XGBoost) on a dataset of 18,000 human gut microbiome samples (Metaphlan4 profiles). The primary objective was to determine the feasibility of microbiome-based BMI prediction and to identify the optimal sample size required for robust model generalization through a comprehensive saturation analysis.
+The workflow produces benchmark artifacts under `Nextflow/results/`, including:
+- model-comparison plots
+- saturation and scaling plots
+- feature-ranking outputs
+- intermediate results used for the interpreted workflow summaries
 
-## Key Findings
-1.  **Random Forest Performance:** The Random Forest algorithm proved to be the most robust model for this high-dimensional task, achieving an $R^2$ of **0.387** and an RMSE of **5.06**.
-2.  **Feasibility & Saturation:** A **Saturation Analysis** (Performance vs. Sample Size) demonstrated that model performance follows a logarithmic growth curve, reaching a plateau at **16,000 samples**. This critical finding suggests that future studies should prioritize large-scale data aggregation (>10k samples) to maximize predictive power.
-3.  **Non-Linearity:** The significant performance gap between Random Forest (Non-Linear, $R^2=0.387$) and Linear SVM ($R^2 \approx 0.04$) strongly indicates that the relationship between gut microbiota and host BMI is fundamentally non-linear and driven by complex interactions rather than additive effects.
-4.  **Biological Signatures:** Feature importance analysis identified *Enterococcus faecalis*, *Veillonella dispar*, and *Acidaminococcus intestini* as the top microbial predictors of BMI.
+## Reproducibility Note
 
-## Repository Structure
-This repository maintains a **Code-Only** policy to ensure privacy compliance and lightweight distribution. Data files and compiled manuscripts are excluded.
+The thesis cites this public repository as a reproducibility resource rather than as a full data release. This identifies the exact public code state associated with the thesis documentation.
 
-```
-.
-├── Nextflow/                   # Core Computational Pipeline
-│   ├── main.nf                 # Main Nextflow Workflow Orchestrator
-│   ├── nextflow.config         # Environment & Resource Configuration
-│   ├── bin/                    # Analysis Methodology (R/Python)
-│   │   ├── preprocess.R        # Variance Filtering (Top 1000 Features)
-│   │   ├── train_ml.R          # ML Training Engine (Caret/XGBoost)
-│   │   ├── run_saturation.R    # Saturation Analysis & Subsampling Logic
-│   │   └── plot_comparison.R   # Visualization Scripts
-│   └── results/                # Generated Artifacts (Plots, CSVs)
-│       └── saturation/         # Saturation Analysis Results
-│
-├── Thesis/                     # Technical Reports
-│   ├── thesis.html             # Pipeline Execution Report (Nextflow)
-│   └── thesis_technical_summary.html # Detailed Run Summary
-│
-└── README.md                   # Project Documentation
-```
+## Interpretation Boundaries
 
-## Computational Methodology
-The analysis pipeline is built using **Nextflow** for reproducibility and scalability.
-1.  **Univariate Filtering:** To handle high-dimensionality, we apply a variance-based filter, selecting the top 500 most variable inter-individual features.
-2.  **Cross-Validation:** Models are validated using **3-Fold Cross-Validation** to ensure robust error estimation while maintaining computational feasibility on large datasets (N=18,000).
-3.  **Saturation Analysis:** We iteratively train models on subsamples ranging from 2,000 to 16,000 samples (step=2,000) to empirically derive the learning curve and determine data sufficiency.
+The outputs generated by this repository should be interpreted cautiously:
+- stronger predictive performance by a non-linear model is consistent with non-linear or interaction-rich structure, but does not prove a specific ecological mechanism
+- feature-ranking outputs are descriptive and do not establish causality
+- internal benchmark performance does not by itself establish external transportability to independent cohorts
 
-## Usage
-To reproduce the analysis:
-1.  **Prerequisites:** Install `nextflow` and `conda`.
-2.  **Data Placement:** Place the input matrix (`metaphlan4_species.tsv`) in the `Data/` directory.
-3.  **Execution:**
-    ```bash
-    nextflow run Nextflow/main.nf -profile conda
-    ```
-
-## Artifacts & Visualization
-- **Saturation Curve (Figure 4):** A visualization of model stability across sample sizes can be found in `Nextflow/results/saturation/saturation_r2.svg` and `saturation_curve_final.png`.
-- **Feature Importance:** Top predictive taxa are visualized in `Nextflow/results/feature_importance.png`.
+For the full methodological interpretation, limitations, and discussion of workflow trade-offs, use the thesis text together with this repository.
