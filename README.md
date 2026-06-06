@@ -3,7 +3,9 @@
 This repository contains the code-only Nextflow workflow used in the master's thesis **"Microbiome-Based Body Mass Index Prediction: A Scalable Machine Learning Benchmark for Large-Scale Metagenomic Data"** (University of Turku, ICT / Data Analytics).
 
 **Author:** Sadia Zaman  
-**Supervisors:** Professor Leo Lahti; Geraldson Muluh
+**Supervisors:** Professor Leo Lahti; MSc Geraldson Muluh
+**Licence:** Artistic 2.0
+**DOI:** https://doi.org/10.5281/zenodo.20569792
 
 The repository documents a reproducible, local-hardware-oriented benchmarking workflow for microbiome-only BMI prediction from large-scale human gut metagenomic taxonomic profiles. It focuses on preprocessing, sample-size scaling, model comparison, and feature-ranking outputs under the implementation constraints described in the thesis.
 
@@ -68,6 +70,7 @@ The repository contains exploratory XGBoost scripts because boosting was investi
 |       `-- saturation/
 |           |-- saturation_r2.png
 |           `-- scaling_time.png
+|-- validation_5fold_subset.R
 |-- README.md
 `-- inspect_log*.txt
 ```
