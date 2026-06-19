@@ -14,6 +14,8 @@ Prediction: A Scalable Machine Learning Benchmark for Large-Scale Metagenomic Da
 | `bacteria_bmi_scatter.py` | abundance-vs-BMI scatter and per-species Spearman/Pearson correlations |
 | `dataset_composition_and_plausibility.py` | weight-vs-height plausibility plot and samples-by-country composition |
 | `make_pipeline_diagram.py` | the Nextflow pipeline diagram (no data needed) |
+| `extract_rf_predictions.R` | extracts the real cross-validated predictions from the saved `rf_model.rds` (writes `rf_cv_predictions.csv`) |
+| `plot_prediction_error.py` | plots the Random Forest prediction-error distribution from `rf_cv_predictions.csv` |
 
 ## Requirements
 
@@ -48,3 +50,15 @@ METALOG_DATA=/path/to/metalog python bmi_population.py
 
 Figures are written to `figures/` and tables to `tables/`. Running the scripts on the
 same Metalog tables reproduces the figures and the reported correlation values exactly.
+
+## Prediction-error figure (optional)
+
+`extract_rf_predictions.R` and `plot_prediction_error.py` regenerate the prediction-error
+distribution from the trained model. They require **R** (with the saved `rf_model.rds`)
+and Python, respectively. The model file is large and not redistributed here; point the
+R script at it with the `RF_MODEL` environment variable:
+
+```
+RF_MODEL=path/to/rf_model.rds Rscript extract_rf_predictions.R
+python plot_prediction_error.py        # reads rf_cv_predictions.csv -> figures/prediction_error.png
+```
